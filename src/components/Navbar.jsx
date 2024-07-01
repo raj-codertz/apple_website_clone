@@ -1,6 +1,10 @@
 const Navbar = () => {
   return (
-    <div>Navbar</div>
+    <header>
+      <nav>
+        <img src='' alt="Apple logo" />
+      </nav>
+    </header>
   )
 }
 
