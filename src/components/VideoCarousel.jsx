@@ -25,6 +25,13 @@ const VideoCarousel = () => {
     const { isEnd, isLastVideo, startPlay, videoId, isPlaying } = video
 
     useGSAP(() => {
+
+        gsap.to('#slider', {
+            transform: `translateX(${-100 * videoId}%)`,
+            duration: 2,
+            ease: 'back.inOut'
+        })
+
         gsap.to('#video', {
             scrollTrigger: {
                 trigger: '#video',
@@ -38,7 +45,7 @@ const VideoCarousel = () => {
                 }))
             }
         })
-    })
+    }, [isEnd, videoId])
 
     useEffect(() => {
         if(loadedData.length > 3) {
@@ -94,7 +101,7 @@ const VideoCarousel = () => {
             }
 
             const animUpdate = () => {
-                anim.progress(videoRef.current[videoId] / hightlightsSlides[videoId].videoDuration)
+                anim.progress(videoRef.current[videoId].currentTime / hightlightsSlides[videoId].videoDuration)
             }
     
             // use ticker to update progress
@@ -121,6 +128,9 @@ const VideoCarousel = () => {
             case 'play':
                 setVideo(pre => ({...pre, isPlaying: !pre.isPlaying}))
                 break;
+            case 'pause':
+                setVideo(pre => ({...pre, isPlaying: !pre.isPlaying}))
+                break;
             default:
                 return video;
         }
@@ -130,7 +140,7 @@ const VideoCarousel = () => {
     <>
         <div className='flex items-center'>
             { hightlightsSlides.map((list, i) => (
-                <div key={list.id} id='slider' className='sm:pr-20 pr-10'>
+                <div key={list.id} id= "slider" className='sm:pr-20 pr-10'>
                     <div className='video-carousel_container'>
                         <div className='w-full h-full flex-center rounded-3xl overflow-hidden bg-black'>
                             <video
@@ -138,8 +148,14 @@ const VideoCarousel = () => {
                               playsInline={true}
                               preload='auto'
                               muted
+                              className={`${
+                                list.id === 2 && 'translate-x-44'
+                              } pointer-events-none`}
                               ref={el => (videoRef.current[i] =
                                 el)}
+                              onEnded={() => (
+                                i !== 3 ? handleProcess('video-end', i) : handleProcess('video-last')
+                              )}
                               onPlay={() => {
                                 setVideo(prevVideo => ({
                                     ...prevVideo, isPlaying: true
@@ -156,7 +172,6 @@ const VideoCarousel = () => {
                                     {text}
                                 </p>
                             ))
-
                             }
                         </div>
                     </div>
